@@ -18,9 +18,10 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import java.lang.Process;
-
-
+import java.net.URL;
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 
 public class FlapGUI extends Application { 
@@ -43,6 +44,8 @@ public class FlapGUI extends Application {
     private Label bottomLabel;
     
     private final String workingDir = System.getProperty("user.dir") + "";
+    private Path exeDir;
+
     
     @Override // Override the start method in the Application class
     public void start(Stage primaryStage) {
@@ -51,7 +54,20 @@ public class FlapGUI extends Application {
         currentHighScore = 0;
         totalHighScore = 0;
         averageScore = "0";
-        
+
+
+        try{
+            URL zipDir = FlapGUI.class.getResource("program.zip");
+            File zipFile = new File(zipDir.getPath());
+            exeDir = Files.createTempDirectory("flapgui");
+            exeDir.toFile().deleteOnExit();
+            UnzipUtility uz = new UnzipUtility();
+            uz.unzip(zipFile.getPath(), exeDir.toString());
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+
         mainPane = new VBox();
         handleTop();
         handleOptions();
@@ -91,8 +107,7 @@ public class FlapGUI extends Application {
     }
     
     private void runScript(){ 
-//TODO need to moveto another directory and then run it there
-        ProcessBuilder builder = new ProcessBuilder(FlapGUI.class.getResource("dist/AI_Learns_Flappy/main.exe").getPath(), 
+        ProcessBuilder builder = new ProcessBuilder(exeDir + "/main.exe", 
                                     typeGame,
                                     fps,
                                     epoch
