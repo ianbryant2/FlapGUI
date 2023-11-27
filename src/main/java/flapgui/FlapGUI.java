@@ -57,12 +57,10 @@ public class FlapGUI extends Application {
 
 
         try{
-            URL zipDir = FlapGUI.class.getResource("program.zip");
-            File zipFile = new File(zipDir.getPath());
+            File newZipFile = new File(ExeUnpack.unpack("program.zip"));
             exeDir = Files.createTempDirectory("flapgui");
-            exeDir.toFile().deleteOnExit();
             UnzipUtility uz = new UnzipUtility();
-            uz.unzip(zipFile.getPath(), exeDir.toString());
+            uz.unzip(newZipFile.getPath(), exeDir.toString());
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -76,6 +74,21 @@ public class FlapGUI extends Application {
         primaryStage.setTitle("FlappyBird GUI"); // Set the stage title
         primaryStage.setScene(scene); // Place the scene in the stage
         primaryStage.show(); // Display the stage
+    }
+
+    public void stop() throws Exception {  
+        deleteDirectory(exeDir.toFile());
+        super.stop(); 
+    }
+
+    private boolean deleteDirectory(File directoryToBeDeleted) {
+        File[] allContents = directoryToBeDeleted.listFiles();
+        if (allContents != null) {
+            for (File file : allContents) {
+                deleteDirectory(file);
+            }
+        }
+        return directoryToBeDeleted.delete();
     }
 
     public static void main(String[] args) {

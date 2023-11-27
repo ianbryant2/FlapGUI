@@ -6,10 +6,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.Buffer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-import java.io.FileNotFoundException;
  
 /**
  * This utility extracts files and directories of a standard zip file to
