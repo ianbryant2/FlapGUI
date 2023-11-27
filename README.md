@@ -10,8 +10,6 @@ Future Features/Improvements
 
 (Going from most important to least)
 
-1. Make release that will be able to be built as a jar
-
 1. Do not require the user to press the enter button when entering information into the GUI
 
 1. Add the ability to evaluate own weights
