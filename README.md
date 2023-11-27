@@ -10,11 +10,14 @@ Future Features/Improvements
 
 (Going from most important to least)
 
+1. Allow UI window to close only when the launched process closes
+
 1. Do not require the user to press the enter button when entering information into the GUI
 
 1. Add the ability to evaluate own weights
 
 1. Do not allow multiple processes to run at once
+
 
 Setup (Tested on Windows with Java 17.09 and Maven 3.9.5)
 --------------------------------------------------------
@@ -34,6 +37,8 @@ Run:
 mvn javafx:run -f "path\to\pom.xml"
 ```
 
-- Make not to click start multiple times as it would cause multiple processes to start
+- Make sure not to click start multiple times as it would cause multiple processes to start
 
 - Make sure to press enter when entering data into GUI for it to be included when starting the process
+
+- Make sure to close UI window a couple of seconds after the process closes
