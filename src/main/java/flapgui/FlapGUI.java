@@ -1,24 +1,28 @@
 package flapgui;
 
-import javafx.application.Application; 
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button; 
 import javafx.scene.control.Label; 
 import javafx.scene.layout.HBox; 
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import javafx.scene.layout.Priority;
 import javafx.scene.text.*;
 import javafx.geometry.Insets;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.scene.Node;
 import javafx.scene.control.RadioButton;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.GridPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import java.lang.Process;
-import java.net.URL;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -42,8 +46,7 @@ public class FlapGUI extends Application {
     
     private Label topLabel;
     private Label bottomLabel;
-    
-    private final String workingDir = System.getProperty("user.dir") + "";
+
     private Path exeDir;
 
     
@@ -65,7 +68,18 @@ public class FlapGUI extends Application {
             e.printStackTrace();
         }
 
-
+        primaryStage.setOnCloseRequest((EventHandler<WindowEvent>) new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent t) {
+                primaryStage.setTitle("Closing..."); // Set the stage title
+                primaryStage.setScene(closingScene()); // Place the scene in the stage
+                primaryStage.show(); // Display the stage
+                deleteDirectory(exeDir.toFile());
+                Platform.exit();
+                System.exit(0);
+            }
+        });
+        
         mainPane = new VBox();
         handleTop();
         handleOptions();
@@ -76,9 +90,14 @@ public class FlapGUI extends Application {
         primaryStage.show(); // Display the stage
     }
 
-    public void stop() throws Exception {  
-        deleteDirectory(exeDir.toFile());
-        super.stop(); 
+    private Scene closingScene(){
+        Text closingText = new Text("Closing... \n\n Don't Close Window");
+        closingText.setTextAlignment(TextAlignment.CENTER);
+        closingText.setFont(new Font(18));
+        closingText.setFill(Color.BLACK);
+        StackPane root = new StackPane();
+        root.getChildren().add(closingText);
+        return new Scene(root, WINDOW_HEIGHT, WINDOW_WIDTH, Color.BLACK);
     }
 
     private boolean deleteDirectory(File directoryToBeDeleted) {
