@@ -6,7 +6,8 @@ import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button; 
 import javafx.scene.control.Label; 
-import javafx.scene.layout.HBox; 
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.scene.layout.Priority;
@@ -30,6 +31,7 @@ import java.nio.file.Path;
 
 public class FlapGUI extends Application { 
     private VBox mainPane;
+    private Stage primaryStage;
     private String typeGame;
     private String fps;
     private String epoch;
@@ -52,42 +54,77 @@ public class FlapGUI extends Application {
     
     @Override // Override the start method in the Application class
     public void start(Stage primaryStage) {
+        this.primaryStage = primaryStage;
         fps = FPS_DEFAULT;
         epoch = EPOCH_DEFAULT;
         currentHighScore = 0;
         totalHighScore = 0;
         averageScore = "0";
 
-
-        try{
-            File newZipFile = new File(ExeUnpack.unpack("program.zip"));
-            exeDir = Files.createTempDirectory("flapgui");
-            UnzipUtility uz = new UnzipUtility();
-            uz.unzip(newZipFile.getPath(), exeDir.toString());
-        } catch (Exception e){
-            e.printStackTrace();
-        }
+       changeScene(loadingScene(), "Loading...");
+       primaryStage.show();
+        
 
         primaryStage.setOnCloseRequest((EventHandler<WindowEvent>) new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent t) {
-                primaryStage.setTitle("Closing..."); // Set the stage title
-                primaryStage.setScene(closingScene()); // Place the scene in the stage
-                primaryStage.show(); // Display the stage
+                changeScene(closingScene(), "Closing...");
                 deleteDirectory(exeDir.toFile());
                 Platform.exit();
                 System.exit(0);
             }
         });
+
         
+        new Thread(() -> {
+            try{
+                File newZipFile = new File(ExeUnpack.unpack("program.zip"));
+                exeDir =  Files.createTempDirectory("flapgui");
+                UnzipUtility uz = new UnzipUtility();
+                uz.unzip(newZipFile.getPath(), exeDir.toString());
+                Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            changeScene(mainScene(), "FlappyBird GUI");
+                        }
+                    });
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
+    private void changeScene(Scene s, String scene_name){
+        primaryStage.setTitle(scene_name);
+        primaryStage.setScene(s);
+    }
+
+    private Scene mainScene(){
         mainPane = new VBox();
         handleTop();
         handleOptions();
         handleDisplayResults();
-        Scene scene = new Scene(mainPane, WINDOW_WIDTH, WINDOW_HEIGHT);
-        primaryStage.setTitle("FlappyBird GUI"); // Set the stage title
-        primaryStage.setScene(scene); // Place the scene in the stage
-        primaryStage.show(); // Display the stage
+        return new Scene(mainPane, WINDOW_HEIGHT, WINDOW_HEIGHT);
+    }
+
+    private Scene loadingScene(){
+        /**
+        Text closingText = new Text("Loading Please Wait...");
+        closingText.setTextAlignment(TextAlignment.CENTER);
+        closingText.setFont(new Font(18));
+        closingText.setFill(Color.BLACK);
+        StackPane root = new StackPane();
+        root.getChildren().add(closingText);
+        return new Scene(root, WINDOW_HEIGHT, WINDOW_WIDTH, Color.BLACK);
+        */
+        Text closingText = new Text("Loading Please Wait...");
+        closingText.setTextAlignment(TextAlignment.CENTER);
+        closingText.setFont(new Font(18));
+        closingText.setFill(Color.BLACK);
+        StackPane root = new StackPane();
+        root.getChildren().add(closingText);
+        return new Scene(root, WINDOW_HEIGHT, WINDOW_WIDTH, new Color(.953125, .953125, .953125, 1));
+        
     }
 
     private Scene closingScene(){
@@ -97,7 +134,7 @@ public class FlapGUI extends Application {
         closingText.setFill(Color.BLACK);
         StackPane root = new StackPane();
         root.getChildren().add(closingText);
-        return new Scene(root, WINDOW_HEIGHT, WINDOW_WIDTH, Color.BLACK);
+        return new Scene(root, WINDOW_HEIGHT, WINDOW_WIDTH);
     }
 
     private boolean deleteDirectory(File directoryToBeDeleted) {
