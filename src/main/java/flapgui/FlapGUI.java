@@ -126,8 +126,6 @@ public class FlapGUI extends Application {
                                     epoch
                                     );
     
-
-        builder.directory(new File(workingDir));
         builder.redirectErrorStream(true);
         try{
             pro = builder.start();

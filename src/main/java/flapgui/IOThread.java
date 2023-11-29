@@ -16,9 +16,8 @@ public class IOThread extends Thread
        BufferedReader reader = new BufferedReader(
                                                 new InputStreamReader(gui.getProcess().getInputStream()));
         String line;
-        Platform.setImplicitExit(false);
         try{
-            while((line = reader.readLine()) != null) {
+            while((line = reader.readLine()) != null && gui.getProcess().isAlive()) {
                 gui.parseOutput(line);
                 Platform.runLater(new Runnable() {
                     @Override
@@ -28,8 +27,10 @@ public class IOThread extends Thread
                     }
                 });
             }
+            reader.close();
         } catch (final Exception e){
             e.printStackTrace();
+
         }
     }
 }
